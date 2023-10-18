@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Judge</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+    <main>
+        <h2>My Simple Judge</h2>
+        <form id="form-solution">
+            <div class="field-wrapper">
+                <label for="problem-id">PROBLEM ID</label>
+                <input type="text" name="problem-id" id="problem-id">
+            </div>
+            <div class="field-wrapper">
+                <label for="solution-language"></label>
+                <select name="solution-language" id="solution-language">
+                    <option value="cpp">GNU C++ 20</option>
+                    <option value="python">Python 3.8</option>
+                </select>
+            </div>
+            <textarea name="solution-code" id="solution-code" cols="30" rows="10"></textarea>
+            <button type="submit">Enviar</button>
+        </form>
+        <output id="status"></output>
+    </main>
+
+    <script>
+        const output = document.getElementById('status')
+        const form = document.getElementById('form-solution')
+
+        function addStatus(message) {
+            output.innerText += `\n${message}`
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault()
+
+            const problem_id = form['problem-id'].value
+            const language = form['solution-language'].value
+            const code = form['solution-code'].value
+
+            const requestOptions = {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ problem_id, language, code })
+            };
+
+            addStatus(`Submitting solution to ${problem_id} at ${Date.now()}`)
+
+            fetch('http://localhost:3000/submit-solution', requestOptions)
+                .then(response => {
+                    return response.json();
+                })
+                .then(data => {
+                    addStatus(`Solution to ${problem_id} received ${data.status}`)
+                })
+                .catch(data => {
+                    addStatus(`Solution to ${problem_id} received ${data.status}`)
+                });
+        })
+    </script>
+</body>
+
+</html>
